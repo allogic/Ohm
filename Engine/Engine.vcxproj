@@ -28,11 +28,14 @@
     <ClInclude Include="Include\Components\Mesh.h" />
     <ClInclude Include="Include\Components\Transform.h" />
     <ClInclude Include="Include\Core.h" />
+    <ClInclude Include="Include\Editor\Editor.h" />
+    <ClInclude Include="Include\Event.h" />
     <ClInclude Include="Include\Ohm.h" />
     <ClInclude Include="Include\Job.h" />
     <ClInclude Include="Include\Renderer.h" />
     <ClInclude Include="Include\Scene.h" />
     <ClInclude Include="Include\Shader.h" />
+    <ClInclude Include="Include\Shaders\PhongShader.h" />
     <ClInclude Include="Include\VertexArrayLayout.h" />
   </ItemGroup>
   <ItemGroup>

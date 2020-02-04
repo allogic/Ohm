@@ -4,8 +4,15 @@
 #include "Components/Mesh.h"
 
 namespace Ohm {
+	using namespace ::Ohm::Components;
+
 	struct SJob {
-		CTransform* pTransform;
-		CMesh* pMesh;
+		SJob() = default;
+		SJob(CTransform* pTransform, CMesh* pMesh) :
+			mpTransform(pTransform),
+			mpMesh(pMesh) {}
+
+		CTransform* mpTransform = nullptr;
+		CMesh* mpMesh = nullptr;
 	};
 }

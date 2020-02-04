@@ -4,13 +4,14 @@
 #include <string>
 #include <vector>
 #include <chrono>
+#include <algorithm>
 
 #ifndef ENGINE_GL_MAJOR
 #define ENGINE_GL_MAJOR 4
 #endif
 
 #ifndef ENGINE_GL_MINOR
-#define ENGINE_GL_MINOR 0
+#define ENGINE_GL_MINOR 6
 #endif
 
 #define ENGINE_STR_HELPER(STR) #STR

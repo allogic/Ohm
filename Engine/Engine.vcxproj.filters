@@ -56,5 +56,14 @@
     <ClInclude Include="Include\Ohm.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Shaders\PhongShader.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Editor\Editor.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Event.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -20,9 +20,9 @@ void Ohm::CShader::Bind() const {
 	glUseProgram(mProgram);
 }
 
-bool Ohm::CShader::Compile() {
-	if (!CompileShader(mVso, mVertexSource)) return false;
-	if (!CompileShader(mFso, mFragmentSource)) return false;
+bool Ohm::CShader::Compile(const std::string& vertexSource, const std::string& fragmentSource) {
+	if (!CompileShader(mVso, vertexSource)) return false;
+	if (!CompileShader(mFso, fragmentSource)) return false;
 
 	return LinkShaders();
 }

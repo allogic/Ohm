@@ -15,19 +15,13 @@ namespace Ohm {
 		auto& operator =(const CShader&) = delete;
 
 	public:
+		bool Compile(const std::string& vertexSource, const std::string& fragmentSource);
 		void Bind() const;
-
-	protected:
-		bool Compile();
 
 	private:
 		bool CompileShader(unsigned int& shader, const std::string& source);
 		bool LinkShaders();
 		bool CheckStatus(unsigned int shader, unsigned int type, std::string& log) const;
-
-	protected:
-		std::string mVertexSource;
-		std::string mFragmentSource;
 
 	private:
 		unsigned int mVso;

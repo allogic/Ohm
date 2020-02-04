@@ -3,11 +3,11 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace Ohm {
+namespace Ohm::Components {
 	class CTransform final {
 	public:
 		CTransform() = default;
-		CTransform(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale) :
+		CTransform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale) :
 			mPosition(position),
 			mRotation(rotation),
 			mScale(scale) {}

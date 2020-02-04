@@ -2,8 +2,11 @@
 
 #include "Core.h"
 #include "Job.h"
+#include "Shader.h"
 
 namespace Ohm {
+	using namespace ::Ohm::Components;
+
 	class CRenderer final {
 	public:
 		CRenderer() = default;
@@ -14,10 +17,12 @@ namespace Ohm {
 		auto& operator =(const CRenderer&) = delete;
 
 	public:
-		inline void Submit(CTransform& transform, CMesh& mesh) { mLambertRenderPassQueue.push_back({ &transform, &mesh }); }
+		inline void Submit(CTransform& transform, CMesh& mesh) {
+			mLambertRenderPassQueue.emplace_back(&transform, &mesh);
+		}
 
 		void LambertRenderPass() {
-			//std::sort(std::execution::parallel_policy{}, mLambertRenderPassQueue.begin(), mLambertRenderPassQueue.end());
+			//std::sort(mLambertRenderPassQueue.begin(), mLambertRenderPassQueue.end());
 
 			while (!mLambertRenderPassQueue.empty()) {
 				const auto& job = mLambertRenderPassQueue.back();

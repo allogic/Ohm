@@ -6,8 +6,9 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
-Ohm::CApplication::CApplication(const SApplicationConfig& config) :
-	mConfig(config) {
+Ohm::CApplication::CApplication(unsigned int framesPerSecond, unsigned int width, unsigned int height, const char* title) :
+	mFramesPerSecond(framesPerSecond),
+	mWindowSize(width, height) {
 	glfwSetErrorCallback(ErrorCallback);
 
 	if (!glfwInit()) {
@@ -22,7 +23,7 @@ Ohm::CApplication::CApplication(const SApplicationConfig& config) :
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-	mpWindow = glfwCreateWindow(static_cast<int>(mConfig.width), static_cast<int>(mConfig.height), mConfig.title, nullptr, nullptr);
+	mpWindow = glfwCreateWindow(static_cast<int>(width), static_cast<int>(height), title, nullptr, nullptr);
 
 	if (!mpWindow) {
 		ENGINE_TRACE("Failed creating glfw window");
@@ -32,10 +33,13 @@ Ohm::CApplication::CApplication(const SApplicationConfig& config) :
 
 	glfwMakeContextCurrent(mpWindow);
 
+	mpEventClbFuncPtr = &EventCallback;
+
 	glfwSetWindowUserPointer(mpWindow, this);
 
 	glfwSetWindowCloseCallback(mpWindow, CloseCallback);
 	glfwSetWindowSizeCallback(mpWindow, ResizeCallback);
+	glfwSetCursorPosCallback(mpWindow, MousePositionCallback);
 
 	if (!gladLoadGL()) {
 		ENGINE_TRACE("Failed loading gl");
@@ -87,7 +91,7 @@ void Ohm::CApplication::Run() {
 	double prevTime = 0.;
 	double deltaTime = 0.;
 
-	const double renderRate = 1. / mConfig.framesPerSecond;
+	const double renderRate = 1. / mFramesPerSecond;
 	double prevRenderTime = 0.;
 
 	while (mRunning) {
@@ -96,37 +100,35 @@ void Ohm::CApplication::Run() {
 		time = glfwGetTime();
 		deltaTime = time - prevTime;
 
-		{
-			ImGui_ImplOpenGL3_NewFrame();
-			ImGui_ImplGlfw_NewFrame();
-
-			ImGui::NewFrame();
-			InitImguiDockSpace();
-			OnImGui(deltaTime);
-			ImGui::EndFrame();
-
-			ImGui::Render();
-
-			glViewport(0, 0, mConfig.width, mConfig.height);
-			glClearColor(0.f, 0.f, 0.f, 1.f);
-			glClear(GL_COLOR_BUFFER_BIT);
-
-			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-			ImGui::UpdatePlatformWindows();
-			ImGui::RenderPlatformWindowsDefault();
-
-			glfwSwapBuffers(mpWindow);
-		}
-
 		OnUpdate(deltaTime);
-
 		mScene.Update(deltaTime);
 
 		if ((time - prevRenderTime) >= renderRate) {
 			OnRender(deltaTime);
-
 			mScene.Render(deltaTime);
+
+			{
+				ImGui_ImplOpenGL3_NewFrame();
+				ImGui_ImplGlfw_NewFrame();
+
+				ImGui::NewFrame();
+
+				DrawEditor(); // which viewport/framebuffer?
+				OnImGui(deltaTime); // which viewport/framebuffer?
+
+				ImGui::EndFrame();
+
+				ImGui::Render();
+
+				glViewport(0, 0, mWindowSize.x, mWindowSize.y);
+				glClearColor(0.f, 0.f, 0.f, 1.f);
+				glClear(GL_COLOR_BUFFER_BIT);
+
+				ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+				ImGui::UpdatePlatformWindows();
+				ImGui::RenderPlatformWindowsDefault();
+			}
 
 			glfwSwapBuffers(mpWindow);
 
@@ -155,7 +157,7 @@ void Ohm::CApplication::InitImGui() {
 	style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 }
 
-void Ohm::CApplication::InitImguiDockSpace() {
+void Ohm::CApplication::DrawEditor() {
 	ImGuiDockNodeFlags dockSpaceFlags = ImGuiDockNodeFlags_None;
 
 	dockSpaceFlags |= ImGuiDockNodeFlags_PassthruCentralNode;
@@ -177,7 +179,7 @@ void Ohm::CApplication::InitImguiDockSpace() {
 
 	//Menu();
 
-	ImGui::DockSpace(ImGui::GetID("Hierarchy"), ImVec2(0.0f, 0.0f), dockSpaceFlags);
+	ImGui::DockSpace(ImGui::GetID("Root"), ImVec2(0.0f, 0.0f), dockSpaceFlags);
 
 	//Hierarchy();
 	//Scene();
@@ -185,7 +187,7 @@ void Ohm::CApplication::InitImguiDockSpace() {
 	ImGui::End();
 }
 
-void Ohm::CApplication::Menu() {
+void Ohm::CApplication::EditorMenu() {
 	if (ImGui::BeginMenuBar()) {
 		if (ImGui::BeginMenu("File")) {
 			ImGui::EndMenu();
@@ -207,7 +209,7 @@ void Ohm::CApplication::Menu() {
 	}
 }
 
-void Ohm::CApplication::Hierarchy() {
+void Ohm::CApplication::EditorHierarchy() {
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_None;
 
 	windowFlags |= ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoTitleBar;
@@ -220,7 +222,7 @@ void Ohm::CApplication::Hierarchy() {
 	ImGui::End();
 }
 
-void Ohm::CApplication::Scene() {
+void Ohm::CApplication::EditorScene() {
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_None;
 
 	windowFlags |= ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoTitleBar;
@@ -231,4 +233,8 @@ void Ohm::CApplication::Scene() {
 	ImGui::Text("this is some bar");
 
 	ImGui::End();
+}
+
+void Ohm::CApplication::EventCallback(const SEvent& event) {
+
 }

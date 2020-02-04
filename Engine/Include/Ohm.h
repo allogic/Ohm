@@ -1,4 +1,16 @@
+/*
+* TODO:
+*  o Finish deferred renderer with multiple passes
+*  o Impl vars. light models/shaders
+*  o Impl frame buffers for drawing routines
+*/
+
 #include "Application.h"
+
+/*
+* Header mess
+*/
+#include "Shaders/PhongShader.h"
 
 extern Ohm::CApplication* Create();
 
@@ -8,7 +20,7 @@ int main(int argc, char** argv) {
 	try {
 		auto* app = Create();
 
-		app->Run();
+		if (app) app->Run();
 
 		delete app;
 	}
