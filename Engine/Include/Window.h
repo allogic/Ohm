@@ -6,8 +6,6 @@
 #include <glfw/glfw3.h>
 
 namespace Ohm {
-	class CApplication;
-
 	class CWindow final {
 	public:
 		CWindow(void* pApplication, const SWindowConfig& config);

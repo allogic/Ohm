@@ -18,10 +18,9 @@
 int main(int argc, char** argv);
 
 namespace Ohm {
-	class CWindow;
-
 	class CApplication {
 		friend int ::main(int argc, char** argv);
+		friend class CWindow;
 
 	protected:
 		CApplication(
@@ -37,6 +36,9 @@ namespace Ohm {
 
 	public:
 		void Run();
+
+		inline auto& Width() const { return mWindowConfig.width; }
+		inline auto& Height() const { return mWindowConfig.height; }
 
 		inline void PushScene() { mScenes.emplace(); }
 		inline void PopScene() { mScenes.pop(); }

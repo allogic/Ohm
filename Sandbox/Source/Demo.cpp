@@ -1,3 +1,6 @@
+#define ENGINE_GL_MAJOR 4
+#define ENGINE_GL_MINOR 6
+
 #include <Ohm.h>
 
 #include "Program.h"
@@ -23,20 +26,22 @@ public:
 	CSandbox() :
 		mProgram(mRam),
 		mCpu(mRam),
-		CApplication({ 60, false }, { 4, 0, 0, 1280, 720, "Demo" }) {
+		CApplication({ 60, false }, { 0, 1280, 720, "Demo" }) {
 		PushScene();
 	}
 
 public:
 	void OnUpdate(double deltaTime) override {
-		ImGui::Button("I am docked");
-		//ImGui::ShowDemoWindow();
+		//ImGui::SetNextWindowViewport(ImGui::GetID("Root"));
+
+		ImGui::ShowDemoWindow();
 
 		mRam.Hexdump("Rom", CRam::RomOffset, CRam::RomSize);
 		mRam.Hexdump("Heap", CRam::HeapOffset, CRam::HeapSize);
 		mRam.Hexdump("Stack", CRam::StackOffset, CRam::StackSize);
 
 		mRam.Debug();
+		mProgram.Debug();
 		mProgram.Debug();
 		mCpu.Debug();
 	}

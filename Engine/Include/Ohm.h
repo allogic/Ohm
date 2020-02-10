@@ -2,6 +2,8 @@
 * TODO:
 *  - impl framebuffers!
 *  - remove configs!
+*  - impl imgui docking
+*  - impl lambert render call!!
 */
 
 #include "Application.h"

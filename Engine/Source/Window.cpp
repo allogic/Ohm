@@ -1,3 +1,4 @@
+#include "Application.h"
 #include "Window.h"
 
 Ohm::CWindow::CWindow(void* pApplication, const SWindowConfig& config) {
@@ -11,8 +12,8 @@ Ohm::CWindow::CWindow(void* pApplication, const SWindowConfig& config) {
 		return;
 	}
 
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, static_cast<int>(config.glMajor));
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, static_cast<int>(config.glMinor));
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, ENGINE_GL_MAJOR);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, ENGINE_GL_MINOR);
 	glfwWindowHint(GLFW_SAMPLES, static_cast<int>(config.antialiasing));
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -31,14 +32,14 @@ Ohm::CWindow::CWindow(void* pApplication, const SWindowConfig& config) {
 
 	glfwSetWindowCloseCallback(mpWindow, [](GLFWwindow* pWindow) {
 		auto* app = reinterpret_cast<CApplication*>(glfwGetWindowUserPointer(pWindow));
-	
-		//app->mRunning = false;
+
+		app->mRunning = false;
 		});
 	glfwSetWindowSizeCallback(mpWindow, [](GLFWwindow* pWindow, int width, int height) {
 		auto* app = reinterpret_cast<CApplication*>(glfwGetWindowUserPointer(pWindow));
-	
-		//app->mConfig.width = width;
-		//app->mConfig.height = height;
+
+		app->mWindowConfig.width = width;
+		app->mWindowConfig.height = height;
 		});
 }
 

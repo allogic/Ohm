@@ -41,7 +41,6 @@ Ohm::CApplication::CApplication(
 	ImGuiStyle& style = ImGui::GetStyle();
 	style.WindowRounding = 0.f;
 	style.WindowBorderSize = 0.f;
-	style.WindowPadding = { 0.f, 0.f };
 
 	style.Colors[ImGuiCol_WindowBg].w = 1.f;
 
@@ -51,9 +50,7 @@ Ohm::CApplication::CApplication(
 		return;
 	}
 
-	std::string glslVersion{"#version 400"};
-
-	if (!ImGui_ImplOpenGL3_Init(glslVersion.c_str())) {
+	if (!ImGui_ImplOpenGL3_Init(ENGINE_GLSL_VERSION_STR)) {
 		ENGINE_TRACE("Failed initializing imgui for gl");
 
 		return;
