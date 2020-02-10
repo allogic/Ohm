@@ -20,20 +20,24 @@ const unsigned char countProgram[128] = {
 
 class CSandbox final : public CApplication {
 public:
-	CSandbox() : mProgram(mRam), mCpu(mRam), CApplication({ 1000, 1280, 720, false, "Demo" }) {
+	CSandbox() :
+		mProgram(mRam),
+		mCpu(mRam),
+		CApplication({ 60, false }, { 4, 0, 0, 1280, 720, "Demo" }) {
 		PushScene();
 	}
 
 public:
 	void OnUpdate(double deltaTime) override {
-		ImGui::ShowDemoWindow();
+		ImGui::Button("I am docked");
+		//ImGui::ShowDemoWindow();
 
 		mRam.Hexdump("Rom", CRam::RomOffset, CRam::RomSize);
 		mRam.Hexdump("Heap", CRam::HeapOffset, CRam::HeapSize);
 		mRam.Hexdump("Stack", CRam::StackOffset, CRam::StackSize);
 
-		mProgram.Debug();
 		mRam.Debug();
+		mProgram.Debug();
 		mCpu.Debug();
 	}
 
@@ -42,8 +46,8 @@ public:
 	}
 
 private:
-	CProgram mProgram;
 	CRam mRam;
+	CProgram mProgram;
 	CCpu mCpu;
 };
 

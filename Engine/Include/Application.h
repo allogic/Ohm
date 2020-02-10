@@ -1,9 +1,13 @@
 #pragma once
+#pragma once
+
+#include <glad/glad.h>
 
 #include "Core.h"
 #include "Scene.h"
-
-#include <glad/glad.h>
+#include "Window.h"
+#include "ApplicationConfig.h"
+#include "WindowConfig.h"
 
 #include <glfw/glfw3.h>
 
@@ -14,20 +18,15 @@
 int main(int argc, char** argv);
 
 namespace Ohm {
-	struct SApplicationConfig {
-		unsigned int framesPerSecond;
-
-		unsigned int width;
-		unsigned int height;
-
-		bool vsync;
-
-		const char* title;
-	};
+	class CWindow;
 
 	class CApplication {
+		friend int ::main(int argc, char** argv);
+
 	protected:
-		CApplication(const SApplicationConfig& config);
+		CApplication(
+			const SApplicationConfig& applicationConfig,
+			const SWindowConfig& windowConfig);
 		CApplication(const CApplication&) = delete;
 		CApplication(CApplication&&) = delete;
 
@@ -39,12 +38,8 @@ namespace Ohm {
 	public:
 		void Run();
 
-		inline void PushScene() {
-			mScenes.emplace();
-		}
-		inline void PopScene() {
-			mScenes.pop();
-		}
+		inline void PushScene() { mScenes.emplace(); }
+		inline void PopScene() { mScenes.pop(); }
 
 		inline auto CreateEntity() { return mScenes.top().CreateEntity(); }
 
@@ -67,24 +62,6 @@ namespace Ohm {
 		virtual void OnRender(double deltaTime) const {}
 
 	private:
-		friend int ::main(int argc, char** argv);
-
-	private:
-		static inline void ErrorCallback(int error, const char* message) { ENGINE_TRACE(message); }
-
-		static inline void CloseCallback(GLFWwindow* pWindow) {
-			auto* app = reinterpret_cast<CApplication*>(glfwGetWindowUserPointer(pWindow));
-
-			app->mRunning = false;
-		}
-		static inline void ResizeCallback(GLFWwindow* pWindow, int width, int height) {
-			auto* app = reinterpret_cast<CApplication*>(glfwGetWindowUserPointer(pWindow));
-
-			app->mConfig.width = width;
-			app->mConfig.height = height;
-		}
-
-	private:
 		void BeginEditorRootWindow();
 
 		void Menu();
@@ -92,9 +69,10 @@ namespace Ohm {
 		void Scene();
 
 	private:
-		SApplicationConfig mConfig;
+		SApplicationConfig mApplicationConfig;
+		SWindowConfig mWindowConfig;
 
-		GLFWwindow* mpWindow = nullptr;
+		CWindow mWindow;
 
 		bool mRunning = true;
 

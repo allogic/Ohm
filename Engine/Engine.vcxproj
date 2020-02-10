@@ -22,9 +22,11 @@
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\Shader.cpp" />
     <ClCompile Include="Source\VertexArrayLayout.cpp" />
+    <ClCompile Include="Source\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Application.h" />
+    <ClInclude Include="Include\ApplicationConfig.h" />
     <ClInclude Include="Include\Components\Mesh.h" />
     <ClInclude Include="Include\Components\Transform.h" />
     <ClInclude Include="Include\Core.h" />
@@ -34,6 +36,8 @@
     <ClInclude Include="Include\Scene.h" />
     <ClInclude Include="Include\Shader.h" />
     <ClInclude Include="Include\VertexArrayLayout.h" />
+    <ClInclude Include="Include\Window.h" />
+    <ClInclude Include="Include\WindowConfig.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ImGui\ImGui.vcxproj">

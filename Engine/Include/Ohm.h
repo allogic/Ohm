@@ -1,6 +1,7 @@
 /*
 * TODO:
 *  - impl framebuffers!
+*  - remove configs!
 */
 
 #include "Application.h"

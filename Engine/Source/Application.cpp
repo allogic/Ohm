@@ -6,37 +6,12 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
-Ohm::CApplication::CApplication(const SApplicationConfig& config) :
-	mConfig(config) {
-	glfwSetErrorCallback(ErrorCallback);
-
-	if (!glfwInit()) {
-		ENGINE_TRACE("Failed initializing glfw");
-
-		return;
-	}
-
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, ENGINE_GL_MAJOR);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, ENGINE_GL_MINOR);
-	glfwWindowHint(GLFW_SAMPLES, 0);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-
-	mpWindow = glfwCreateWindow(static_cast<int>(mConfig.width), static_cast<int>(mConfig.height), mConfig.title, nullptr, nullptr);
-
-	if (!mpWindow) {
-		ENGINE_TRACE("Failed creating glfw window");
-
-		return;
-	}
-
-	glfwMakeContextCurrent(mpWindow);
-
-	glfwSetWindowUserPointer(mpWindow, this);
-
-	glfwSetWindowCloseCallback(mpWindow, CloseCallback);
-	glfwSetWindowSizeCallback(mpWindow, ResizeCallback);
-
+Ohm::CApplication::CApplication(
+	const SApplicationConfig& applicationConfig,
+	const SWindowConfig& windowConfig) :
+	mApplicationConfig(applicationConfig),
+	mWindowConfig(windowConfig),
+	mWindow(this, windowConfig) {
 	if (!gladLoadGL()) {
 		ENGINE_TRACE("Failed loading gl");
 
@@ -67,16 +42,18 @@ Ohm::CApplication::CApplication(const SApplicationConfig& config) :
 	style.WindowRounding = 0.f;
 	style.WindowBorderSize = 0.f;
 	style.WindowPadding = { 0.f, 0.f };
-	
+
 	style.Colors[ImGuiCol_WindowBg].w = 1.f;
 
-	if (!ImGui_ImplGlfw_InitForOpenGL(mpWindow, true)) {
+	if (!ImGui_ImplGlfw_InitForOpenGL(mWindow.Ptr(), true)) {
 		ENGINE_TRACE("Failed initializing imgui for glfw");
 
 		return;
 	}
 
-	if (!ImGui_ImplOpenGL3_Init(ENGINE_GLSL_VERSION_STR)) {
+	std::string glslVersion{"#version 400"};
+
+	if (!ImGui_ImplOpenGL3_Init(glslVersion.c_str())) {
 		ENGINE_TRACE("Failed initializing imgui for gl");
 
 		return;
@@ -88,22 +65,19 @@ Ohm::CApplication::~CApplication() {
 	ImGui_ImplGlfw_Shutdown();
 
 	ImGui::DestroyContext();
-
-	glfwDestroyWindow(mpWindow);
-	glfwTerminate();
 }
 
 void Ohm::CApplication::Run() {
-	if (!mpWindow) return;
+	if (!mWindow.Ptr()) return;
 
 	double time = 0.;
 	double prevTime = 0.;
 	double deltaTime = 0.;
 
-	const double renderRate = 1. / mConfig.framesPerSecond;
+	const double renderRate = 1. / mApplicationConfig.framesPerSecond;
 	double prevRenderTime = 0.;
 
-	glfwSwapInterval(mConfig.vsync);
+	glfwSwapInterval(mApplicationConfig.vsync);
 
 	while (mRunning) {
 		glfwPollEvents();
@@ -141,7 +115,7 @@ void Ohm::CApplication::Run() {
 
 		ImGui::Render();
 
-		glViewport(0, 0, mConfig.width, mConfig.height);
+		glViewport(0, 0, mWindowConfig.width, mWindowConfig.height);
 
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -152,7 +126,7 @@ void Ohm::CApplication::Run() {
 
 		glfwMakeContextCurrent(context);
 
-		glfwSwapBuffers(mpWindow);
+		glfwSwapBuffers(mWindow.Ptr());
 
 		prevTime = time;
 	}
