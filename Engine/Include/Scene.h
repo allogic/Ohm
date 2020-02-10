@@ -46,6 +46,11 @@ namespace Ohm {
 			mRegistry.assign<Component>(entity, std::forward<Args>(args) ...);
 		}
 
+		template<typename ... Components>
+		auto GetComponents(const entt::entity& entity) {
+			return mRegistry.get<Components>(entity);
+		}
+
 	private:
 		entt::registry mRegistry;
 

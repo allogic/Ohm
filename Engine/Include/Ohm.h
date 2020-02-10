@@ -1,3 +1,8 @@
+/*
+* TODO:
+*  - impl framebuffers!
+*/
+
 #include "Application.h"
 
 extern Ohm::CApplication* Create();

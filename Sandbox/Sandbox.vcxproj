@@ -165,6 +165,11 @@
       <Project>{5f4c3e86-517e-45ff-899b-56b8f8bf0273}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Include\Cpu.h" />
+    <ClInclude Include="Include\Program.h" />
+    <ClInclude Include="Include\Ram.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

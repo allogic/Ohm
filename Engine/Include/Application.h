@@ -20,6 +20,8 @@ namespace Ohm {
 		unsigned int width;
 		unsigned int height;
 
+		bool vsync;
+
 		const char* title;
 	};
 
@@ -32,15 +34,37 @@ namespace Ohm {
 		virtual ~CApplication();
 
 	protected:
-		CApplication& operator =(const CApplication&) = delete;
+		auto& operator =(const CApplication&) = delete;
 
 	public:
 		void Run();
 
+		inline void PushScene() {
+			mScenes.emplace();
+		}
+		inline void PopScene() {
+			mScenes.pop();
+		}
+
+		inline auto CreateEntity() { return mScenes.top().CreateEntity(); }
+
+		template<typename Component, typename ... Args>
+		inline void AddComponent(const entt::entity& entity, Args&&... args) {
+			mScenes.top().AddComponent<Component>(entity, std::forward<Args>(args) ...);
+		}
+
+		template<typename ... Components>
+		inline auto GetComponents(const entt::entity& entity) {
+			return mScenes.top().GetComponents<Components>(entity);
+		}
+
 	protected:
-		virtual void OnImGui(double deltaTime) {};
-		virtual void OnUpdate(double deltaTime) {};
-		virtual void OnRender(double deltaTime) const {};
+		virtual void OnImGui(double deltaTime) {}
+
+		virtual void OnUpdate(double deltaTime) {}
+		virtual void OnFixedUpdate(double deltaTime) {}
+
+		virtual void OnRender(double deltaTime) const {}
 
 	private:
 		friend int ::main(int argc, char** argv);
@@ -49,20 +73,19 @@ namespace Ohm {
 		static inline void ErrorCallback(int error, const char* message) { ENGINE_TRACE(message); }
 
 		static inline void CloseCallback(GLFWwindow* pWindow) {
-			CApplication* app = reinterpret_cast<CApplication*>(glfwGetWindowUserPointer(pWindow));
+			auto* app = reinterpret_cast<CApplication*>(glfwGetWindowUserPointer(pWindow));
 
 			app->mRunning = false;
 		}
 		static inline void ResizeCallback(GLFWwindow* pWindow, int width, int height) {
-			CApplication* app = reinterpret_cast<CApplication*>(glfwGetWindowUserPointer(pWindow));
+			auto* app = reinterpret_cast<CApplication*>(glfwGetWindowUserPointer(pWindow));
 
 			app->mConfig.width = width;
 			app->mConfig.height = height;
 		}
 
 	private:
-		void InitImGui();
-		void InitImguiDockSpace();
+		void BeginEditorRootWindow();
 
 		void Menu();
 		void Hierarchy();
@@ -75,7 +98,6 @@ namespace Ohm {
 
 		bool mRunning = true;
 
-	public:
-		CScene mScene;
+		std::stack<CScene> mScenes;
 	};
 }

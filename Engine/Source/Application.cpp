@@ -55,7 +55,20 @@ Ohm::CApplication::CApplication(const SApplicationConfig& config) :
 		return;
 	}
 
-	InitImGui();
+	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+	io.ConfigFlags |= ImGuiDockNodeFlags_PassthruCentralNode;
+
+	io.ConfigDockingWithShift = true;
+
+	ImGuiStyle& style = ImGui::GetStyle();
+	style.WindowRounding = 0.f;
+	style.WindowBorderSize = 0.f;
+	style.WindowPadding = { 0.f, 0.f };
+	
+	style.Colors[ImGuiCol_WindowBg].w = 1.f;
 
 	if (!ImGui_ImplGlfw_InitForOpenGL(mpWindow, true)) {
 		ENGINE_TRACE("Failed initializing imgui for glfw");
@@ -90,78 +103,66 @@ void Ohm::CApplication::Run() {
 	const double renderRate = 1. / mConfig.framesPerSecond;
 	double prevRenderTime = 0.;
 
+	glfwSwapInterval(mConfig.vsync);
+
 	while (mRunning) {
 		glfwPollEvents();
 
 		time = glfwGetTime();
 		deltaTime = time - prevTime;
 
-		{
-			ImGui_ImplOpenGL3_NewFrame();
-			ImGui_ImplGlfw_NewFrame();
+		glClearColor(0.f, 0.f, 0.f, 1.f);
+		glClear(GL_COLOR_BUFFER_BIT);
 
-			ImGui::NewFrame();
-			InitImguiDockSpace();
-			OnImGui(deltaTime);
-			ImGui::EndFrame();
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
 
-			ImGui::Render();
+		ImGui::NewFrame();
 
-			glViewport(0, 0, mConfig.width, mConfig.height);
-			glClearColor(0.f, 0.f, 0.f, 1.f);
-			glClear(GL_COLOR_BUFFER_BIT);
-
-			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-			ImGui::UpdatePlatformWindows();
-			ImGui::RenderPlatformWindowsDefault();
-
-			glfwSwapBuffers(mpWindow);
-		}
+		BeginEditorRootWindow();
 
 		OnUpdate(deltaTime);
-
-		mScene.Update(deltaTime);
+		mScenes.top().Update(deltaTime);
 
 		if ((time - prevRenderTime) >= renderRate) {
+			OnFixedUpdate(deltaTime);
+
 			OnRender(deltaTime);
-
-			mScene.Render(deltaTime);
-
-			glfwSwapBuffers(mpWindow);
+			mScenes.top().Render(deltaTime);
 
 			prevRenderTime = time;
 		}
+
+		OnImGui(deltaTime);
+
+		ImGui::End();
+
+		ImGui::EndFrame();
+
+		ImGui::Render();
+
+		glViewport(0, 0, mConfig.width, mConfig.height);
+
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+		GLFWwindow* context = glfwGetCurrentContext();
+
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault();
+
+		glfwMakeContextCurrent(context);
+
+		glfwSwapBuffers(mpWindow);
 
 		prevTime = time;
 	}
 }
 
-void Ohm::CApplication::InitImGui() {
-	ImGui::StyleColorsDark();
-
-	ImGuiIO& io = ImGui::GetIO();
-
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-	io.ConfigFlags |= ImGuiDockNodeFlags_PassthruCentralNode;
-
-	io.ConfigDockingWithShift = true;
-
-	ImGuiStyle& style = ImGui::GetStyle();
-
-	style.WindowRounding = 0.0f;
-	style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-}
-
-void Ohm::CApplication::InitImguiDockSpace() {
+void Ohm::CApplication::BeginEditorRootWindow() {
 	ImGuiDockNodeFlags dockSpaceFlags = ImGuiDockNodeFlags_None;
-
 	dockSpaceFlags |= ImGuiDockNodeFlags_PassthruCentralNode;
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_None;
-
 	windowFlags |= ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoTitleBar;
 	windowFlags |= ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
 
@@ -173,16 +174,7 @@ void Ohm::CApplication::InitImguiDockSpace() {
 
 	ImGui::Begin("Root", 0, windowFlags);
 
-	//ImGui::ShowDemoWindow((bool*)1);
-
-	//Menu();
-
-	ImGui::DockSpace(ImGui::GetID("Hierarchy"), ImVec2(0.0f, 0.0f), dockSpaceFlags);
-
-	//Hierarchy();
-	//Scene();
-
-	ImGui::End();
+	ImGui::DockSpace(ImGui::GetID("Root"), ImVec2(0.0f, 0.0f), dockSpaceFlags);
 }
 
 void Ohm::CApplication::Menu() {

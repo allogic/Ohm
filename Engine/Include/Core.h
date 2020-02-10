@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <chrono>
+#include <stack>
 
 #ifndef ENGINE_GL_MAJOR
 #define ENGINE_GL_MAJOR 4

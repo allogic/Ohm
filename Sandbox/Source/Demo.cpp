@@ -1,36 +1,50 @@
 #include <Ohm.h>
 
-#define SANDBOX_DEMO_STRESS_LVL_SIMPLE 1000
-#define SANDBOX_DEMO_STRESS_LVL_NORMAL 10000
-#define SANDBOX_DEMO_STRESS_LVL_INSANE 100000
+#include "Program.h"
+#include "Ram.h"
+#include "Cpu.h"
 
-class CSandbox final : public Ohm::CApplication {
+using namespace Ohm;
+
+const unsigned char countProgram[128] = {
+	0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	LDX, 0,	LDY, 1,	ADD, STA, 0, JMP, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+
+class CSandbox final : public CApplication {
 public:
-	CSandbox() : CApplication({ 60, 1280, 720, "Demo" }) {
-		for (unsigned int i = 0; i < SANDBOX_DEMO_STRESS_LVL_NORMAL; i++) {
-			auto entity = mScene.CreateEntity();
-
-			mScene.AddComponent<Ohm::CTransform>(entity);
-			mScene.AddComponent<Ohm::CMesh>(entity);
-		}
-	}
-
-	virtual ~CSandbox() override {
-
+	CSandbox() : mProgram(mRam), mCpu(mRam), CApplication({ 1000, 1280, 720, false, "Demo" }) {
+		PushScene();
 	}
 
 public:
-	void OnImGui(double deltaTime) override {
-		ImGui::Text("some foo");
-	}
-
 	void OnUpdate(double deltaTime) override {
+		ImGui::ShowDemoWindow();
 
+		mRam.Hexdump("Rom", CRam::RomOffset, CRam::RomSize);
+		mRam.Hexdump("Heap", CRam::HeapOffset, CRam::HeapSize);
+		mRam.Hexdump("Stack", CRam::StackOffset, CRam::StackSize);
+
+		mProgram.Debug();
+		mRam.Debug();
+		mCpu.Debug();
 	}
 
-	void OnRender(double deltaTime) const override {
-
+	void OnFixedUpdate(double deltaTime) override {
+		mCpu.Update();
 	}
+
+private:
+	CProgram mProgram;
+	CRam mRam;
+	CCpu mCpu;
 };
 
 CREATE(CSandbox)
