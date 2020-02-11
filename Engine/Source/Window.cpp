@@ -41,10 +41,17 @@ Ohm::CWindow::CWindow(void* pApplication, const SWindowConfig& config) {
 		app->mWindowConfig.width = width;
 		app->mWindowConfig.height = height;
 		});
+
+	if (!gladLoadGL()) {
+		ENGINE_TRACE("Failed loading gl");
+
+		return;
+	}
 }
 
 Ohm::CWindow::~CWindow() {
-	glfwDestroyWindow(mpWindow);
+	if (mpWindow)
+		glfwDestroyWindow(mpWindow);
 
 	glfwTerminate();
 }

@@ -18,7 +18,7 @@ namespace Ohm {
 		auto& operator =(const CWindow&) = delete;
 
 	public:
-		inline auto* Ptr() { return mpWindow; }
+		inline auto* Ptr() const { return mpWindow; }
 
 	private:
 		GLFWwindow* mpWindow = nullptr;

@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 
 #include <glad/glad.h>
 
@@ -8,12 +7,9 @@
 #include "Window.h"
 #include "ApplicationConfig.h"
 #include "WindowConfig.h"
+#include "Gui.h"
 
 #include <glfw/glfw3.h>
-
-#include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
 
 int main(int argc, char** argv);
 
@@ -23,13 +19,9 @@ namespace Ohm {
 		friend class CWindow;
 
 	protected:
-		CApplication(
-			const SApplicationConfig& applicationConfig,
-			const SWindowConfig& windowConfig);
+		CApplication(const SApplicationConfig& applicationConfig, const SWindowConfig& windowConfig);
 		CApplication(const CApplication&) = delete;
 		CApplication(CApplication&&) = delete;
-
-		virtual ~CApplication();
 
 	protected:
 		auto& operator =(const CApplication&) = delete;
@@ -56,8 +48,6 @@ namespace Ohm {
 		}
 
 	protected:
-		virtual void OnImGui(double deltaTime) {}
-
 		virtual void OnUpdate(double deltaTime) {}
 		virtual void OnFixedUpdate(double deltaTime) {}
 
@@ -65,6 +55,7 @@ namespace Ohm {
 
 	private:
 		void BeginEditorRootWindow();
+		void EndEditorRootWindow();
 
 		void Menu();
 		void Hierarchy();
@@ -75,6 +66,7 @@ namespace Ohm {
 		SWindowConfig mWindowConfig;
 
 		CWindow mWindow;
+		CGui mGui;
 
 		bool mRunning = true;
 

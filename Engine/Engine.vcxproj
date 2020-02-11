@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp" />
+    <ClCompile Include="Source\Gui.cpp" />
     <ClCompile Include="Source\Shader.cpp" />
     <ClCompile Include="Source\VertexArrayLayout.cpp" />
     <ClCompile Include="Source\Window.cpp" />
@@ -30,6 +31,7 @@
     <ClInclude Include="Include\Components\Mesh.h" />
     <ClInclude Include="Include\Components\Transform.h" />
     <ClInclude Include="Include\Core.h" />
+    <ClInclude Include="Include\Gui.h" />
     <ClInclude Include="Include\Ohm.h" />
     <ClInclude Include="Include\Job.h" />
     <ClInclude Include="Include\Renderer.h" />

@@ -21,9 +21,8 @@ namespace Ohm {
 		auto& operator =(const CScene&) = delete;
 
 	public:
-		void Update(double deltaTime) {
-
-		}
+		void Update(double deltaTime) {}
+		void FixedUpdate(double deltaTime) {}
 		void Render(double deltaTime) {
 			ENGINE_MEASURE_BEGIN(SceneTraversal);
 			mRegistry.view<CTransform, CMesh>().each([&](

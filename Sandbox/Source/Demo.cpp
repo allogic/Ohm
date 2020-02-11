@@ -1,6 +1,8 @@
 #define ENGINE_GL_MAJOR 4
 #define ENGINE_GL_MINOR 6
 
+#define ENGINE_EDITOR
+
 #include <Ohm.h>
 
 #include "Program.h"
@@ -23,17 +25,13 @@ const unsigned char countProgram[128] = {
 
 class CSandbox final : public CApplication {
 public:
-	CSandbox() :
-		mProgram(mRam),
-		mCpu(mRam),
+	CSandbox() : mProgram(mRam), mCpu(mRam),
 		CApplication({ 60, false }, { 0, 1280, 720, "Demo" }) {
 		PushScene();
 	}
 
 public:
 	void OnUpdate(double deltaTime) override {
-		//ImGui::SetNextWindowViewport(ImGui::GetID("Root"));
-
 		ImGui::ShowDemoWindow();
 
 		mRam.Hexdump("Rom", CRam::RomOffset, CRam::RomSize);
